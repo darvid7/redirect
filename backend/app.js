@@ -7,11 +7,14 @@ var async  = require('express-async-await')
 var fetch = require('node-fetch');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var cors = require('cors')
 
 const MapsPlacesApiHandler = require('./apis/places');
 const placesApi = new MapsPlacesApiHandler();
 
 var app = express();
+app.use(cors())
+
 
 // view engine setup
 

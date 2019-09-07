@@ -16,7 +16,7 @@ export class MapsPlacesApiHandler {
     }
 
     /** Query the maps Places API. */
-    queryForLocation(queryLocation) {
+   async queryForLocation(queryLocation) {
         console.log(`query:  ${queryLocation}`)
    
         const result = await fetch(endpointFormatter(queryLocation, {

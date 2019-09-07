@@ -1,27 +1,56 @@
 import React, { Component } from 'react';
-import {MapsPlacesApiHandler} from '../apis/places';
-import {getMapInstance, getMapInternals} from './map_components/map';
+import { MapsPlacesApiHandler } from '../apis/places';
+import { getMapInstance, getMapInternals } from './map_components/map';
 
-let placesApi = null;
+function getPlacesEndpoint(query) {
+    return `http://localhost:8888/places/${query}`;
+}
+
 export class SideBar extends Component {
-   
+    constructor(props) {
+        super(props);
+        this.state = { 
+            start: '',
+            end: ''
+        };
+    
+        this.handleStartChange = this.handleStartChange.bind(this);
+        this.handleEndChange = this.handleEndChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
 
-    initAndCallPlacesApi() {
-        if (!placesApi) {
-            // Hacky and is suspect to rendering Map properly.
-            console.log('hm');
-            console.log(getMapInstance());
-            console.log(getMapInternals());
-
-            placesApi = new MapsPlacesApiHandler(
-                new getMapInternals().PlacesService(getMapInstance()))
+      }
+    
+    async callPlacesApi(query) {
+        const response = await fetch(getPlacesEndpoint(query));
+        const start = await response.json();
+        // Could index error here but yolo?
+        if (start['results'].length < 1) {
+            return false;
         }
-        (async () => { 
-            const result = await placesApi.queryForLocation('google sydney');
-            console.log(result);
-        })();
+        const startPlace = start['results'][0];
+        return startPlace;
+    }
+
+    async handleSubmit() {
+        const startPlace = await this.callPlacesApi(this.state.start);
+        const endPlace = await this.callPlacesApi(this.state.end);
+        if (!(startPlace && endPlace)) {
+            alert('Can not locate places!');
+        }
+        console.log(`start: ${JSON.stringify(startPlace)}`);
+        console.log(`end: ${JSON.stringify(endPlace)}`);
 
     }
+
+
+    handleStartChange(event) {
+        this.setState({ start: event.target.value });
+    }
+
+    handleEndChange(event) {
+        this.setState({ end: event.target.value });
+    }
+
     render() {
         return (
             <div style={{
@@ -29,11 +58,16 @@ export class SideBar extends Component {
                 backgroundColor: "red",
                 display: "flex"
             }}>
-                
-                <form action="/action_page.php">
-                First name: <input type="text" name="fname"></input><br/>
-                Last name: <input type="text" name="lname"></input><br/>
-                <input value="Submit" onChange={() => {console.log("shouldn't happen")}} onClick={() => this.initAndCallPlacesApi()}></input>
+
+                <form >
+
+                    Start: <input type="text" value={this.state.start} onChange={this.handleStartChange}>
+                    </input><br />
+
+                    End: <input type="text" value={this.state.end} onChange={this.handleEndChange}>
+                    </input><br />
+
+                    <input value="Submit" onChange={() => { console.log("shouldn't happen") }} onClick={() => this.handleSubmit()}></input>
                 </form>
             </div>
         )
