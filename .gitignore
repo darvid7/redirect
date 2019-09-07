@@ -35,3 +35,5 @@ keys.js
 /data/geojson/new.geojson
 # pickle is too big for github
 /data/geojson/*
+
+/src/data/nsw_js_geojson.js
