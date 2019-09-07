@@ -23,8 +23,8 @@ yarn-debug.log*
 yarn-error.log*
 
 
-data/keys.json
+/data/keys.json
 
 # bloat git.
-data/yearlySum.json
-data/yearlyPerm.json
+/data/yearlySum.json
+/data/yearlyPerm.json
