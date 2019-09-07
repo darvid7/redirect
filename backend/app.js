@@ -10,11 +10,13 @@ var usersRouter = require('./routes/users');
 var cors = require('cors')
 
 const MapsPlacesApiHandler = require('./apis/places');
+const MapsDirectionsApiHandler = require('./apis/directions');
+
 const placesApi = new MapsPlacesApiHandler();
+const directionsApi = new MapsDirectionsApiHandler();
 
 var app = express();
 app.use(cors())
-
 
 // view engine setup
 
@@ -28,9 +30,10 @@ app.use('/home', function(req, res) {
 });
 
 app.get('/wtf', function(req, res) {
-  res.send('wtf');
+  res.send('wtf govhack');
 });
 
+// APIS!!!! -------------
 app.get('/places/:string', async function(req, res) {
   const query = req.params.string
   console.log(`places/:string = ${query}`);
@@ -38,11 +41,22 @@ app.get('/places/:string', async function(req, res) {
   res.send(apiResponse);
 });
 
-// ------------ APIS! ------------
-// app.use('/', function(req, res) {
-//   res.send('hello govhack');
-// });
-// ------------ APIS! ------------
+// http://localhost:8888/directions/a&b
+app.get('/directions/:srcPlaceId&:destPlaceId', async function(req, res) {
+  const {srcPlaceId, destPlaceId}  = req.params;
+  console.log(req.params)
+  console.log(`directions/:srcId=${srcPlaceId}/:destId=${destPlaceId}`);
+  const apiResponse = await directionsApi.queryForDirections(srcPlaceId, destPlaceId);
+  console.log(apiResponse['routes'].length)
+  console.log('num routes above');
+  // if num routes < 3.
+  // generate 3 more.
+  // get nearby place.
+  // use as way point.
+  res.send(apiResponse);
+});
+// APIS!!!! -------------
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
