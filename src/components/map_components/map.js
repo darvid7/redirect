@@ -4,6 +4,7 @@ import GoogleMapReact from 'google-map-react';
 import { keys } from '../../keys';
 import { polygonPaths, constructPolygonOnMap } from './polygon';
 import { polylinePaths, constructPolylineOnMap } from './polyline';
+import { constructDirectionsOnMap, getDirections } from './directions';
 // import { nswGeoJson } from '../../data/nsw_js_geojson.js';
 // console.log(nswGeoJson);
 import { constructMarkerOnMap } from './markers';
@@ -27,42 +28,53 @@ export class Map extends Component {
 
         this.state = {
             center: {
-                lat: -33.8814408,
-                lng: 151.2044524
+                lat: -33.873567,
+                lng: 151.2068498
             },
-            zoom: 12,
+            zoom: 15,
             mapInternals: undefined,
             mapInstance: undefined,
             startPlace: this.props.startPlace,
             endPlace: this.props.endPlace,
             markers: [],
+            polylines: [],
         };
 
     }
 
-    renderMarkers() {
+  async renderMarkersAndDirections() {
         // this.drawGeoJson(mapInstance);
-        console.log('render markers');
+        console.log('render markers and directions');
         console.log(this.state);
         if (this.state.startPlace && this.state.endPlace) {
-            // Remove previous markers.
+            // Remove previous markers and polyines.
             this.state.markers.map(marker => marker.setMap(null));
+            this.state.polylines.map(pl => pl.setMap(null));
 
             const src = constructMarkerOnMap(this.state.mapInstance, this.state.mapInternals, this.state.startPlace['geometry']['location']);
             const dest = constructMarkerOnMap(this.state.mapInstance, this.state.mapInternals, this.state.endPlace['geometry']['location']);
 
-            this.setState({markers: [src, dest]});
+            // We have a start and end, lets get directions!
+            const directionApiReponse = await getDirections(this.state.startPlace['place_id'], this.state.endPlace['place_id']);
+            const { drawnPolylines, animationPolyline }  = constructDirectionsOnMap(this.state.mapInstance, this.state.mapInternals, directionApiReponse)
+            this.setState({
+                markers: [src, dest], 
+                polylines: drawnPolylines,
+            });
+
+
         }
     }
+
     componentWillReceiveProps(nextProps) {
         console.log('will recieve props');
         console.log(nextProps);
         // You don't have to do this check first, but it can help prevent an unneeded render
         if (nextProps.startPlace !== this.state.startPlace) {
-            this.setState({ startPlace: nextProps.startPlace }, () => this.renderMarkers());
+            this.setState({ startPlace: nextProps.startPlace }, () => this.renderMarkersAndDirections());
         }
         if (nextProps.endPlace !== this.state.endPlace) {
-            this.setState({ endPlace: nextProps.endPlace }, () => this.renderMarkers()
+            this.setState({ endPlace: nextProps.endPlace }, () => this.renderMarkersAndDirections()
             );
         }
 
@@ -94,23 +106,23 @@ export class Map extends Component {
         var trafficLayer = new mapInternals.TrafficLayer();
         trafficLayer.setMap(mapInstance);
 
-        // Collect polygons, might do something with them later.
-        const polygons = [];
-        // Draw all polygons.
-        polygonPaths.map((polygonCoords) => {
-            const polygon = constructPolygonOnMap(mapInstance, mapInternals, polygonCoords, "#FF0000", 0.4, 2, "#FF0000", 0.35);
-            polygons.push(polygon);
-        });
-        console.log(polygons);
+        // // Collect polygons, might do something with them later.
+        // const polygons = [];
+        // // Draw all polygons.
+        // polygonPaths.map((polygonCoords) => {
+        //     const polygon = constructPolygonOnMap(mapInstance, mapInternals, polygonCoords, "#FF0000", 0.4, 2, "#FF0000", 0.35);
+        //     polygons.push(polygon);
+        // });
+        // console.log(polygons);
 
-        // Collect polylines might do something with them later.
-        const polylines = [];
-        // Draw all polygons.
-        polylinePaths.map((polylineCoords) => {
-            const polyline = constructPolylineOnMap(mapInstance, mapInternals, polylineCoords, "#0000FF", 0.8, 1);
-            polylines.push(polyline);
-        });
-        console.log(polylines);
+        // // Collect polylines might do something with them later.
+        // const polylines = [];
+        // // Draw all polygons.
+        // polylinePaths.map((polylineCoords) => {
+        //     const polyline = constructPolylineOnMap(mapInstance, mapInternals, polylineCoords, "#0000FF", 0.8, 1);
+        //     polylines.push(polyline);
+        // });
+        // console.log(polylines);
     }
 
     render() {

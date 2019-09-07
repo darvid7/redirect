@@ -12,13 +12,14 @@ export const polylinePaths = [
 ]
 
 /** Wraps creating a google map Polyline and returns the Polyline instance. */
-export function constructPolylineOnMap(map, mapsInternals, coords, strokeColor, strokeOpacity, strokeWeight) {
+export function constructPolylineOnMap(map, mapsInternals, coords, strokeColor, strokeOpacity, strokeWeight, icons = []) {
     const polyline = new mapsInternals.Polyline({
         path: coords,
         geodesic: true,
         strokeColor,
         strokeOpacity,
-        strokeWeight
+        strokeWeight,
+        icons,
     });
     polyline.setMap(map);
     return polyline;
