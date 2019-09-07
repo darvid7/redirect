@@ -21,3 +21,10 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+data/keys.json
+
+# bloat git.
+data/yearlySum.json
+data/yearlyPerm.json
