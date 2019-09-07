@@ -37,3 +37,7 @@ keys.js
 /data/geojson/*
 
 /src/data/nsw_js_geojson.js
+
+# Backend
+/backend/node_modules
+/backend/keys.js
