@@ -28,3 +28,10 @@ yarn-error.log*
 # bloat git.
 /data/yearlySum.json
 /data/yearlyPerm.json
+
+keys.js
+
+# Data is in the pickle.
+/data/geojson/new.geojson
+# pickle is too big for github
+/data/geojson/*
