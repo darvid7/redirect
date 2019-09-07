@@ -32,6 +32,9 @@ export class SideBar extends Component {
     }
 
     async handleSubmit() {
+        if (!(this.state.start || this.state.end)) {
+            return;
+        }
         const startPlace = await this.callPlacesApi(this.state.start);
         const endPlace = await this.callPlacesApi(this.state.end);
         if (!(startPlace && endPlace)) {
@@ -40,8 +43,10 @@ export class SideBar extends Component {
         console.log(`start: ${JSON.stringify(startPlace)}`);
         console.log(`end: ${JSON.stringify(endPlace)}`);
 
-    }
+        this.props.updateStart(startPlace);
+        this.props.updateEnd(endPlace);
 
+    }
 
     handleStartChange(event) {
         this.setState({ start: event.target.value });
