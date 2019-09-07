@@ -1,6 +1,8 @@
 import { canvaToGoogleDirections } from '../../data/map_cache/directions_cache';
 import { constructPolylineOnMap } from './polyline';
 import { congestionLevels } from '../../data/traffic_congestion';
+import carIcon from '../../data/car.svg';
+import { carSvgPath } from '../../data/carSvg';
 
 // TODO: incrementally cache backend?
 const USE_CACHE = true;
@@ -57,13 +59,14 @@ function converter() {
 }
 function animateCircle(line) {
     var count = 0;
-    window.setInterval(function() {
-      count = (count + 1) % 200;
+    window.setInterval(function () {
+        count = (count + 1) % 200;
 
-      var icons = line.get('icons');
-      icons[0].offset = (count / 2) + '%';
-      line.set('icons', icons);
-  }, 20);
+        var icons = line.get('icons');
+        icons[0].offset = (count / 2) + '%';
+        // can use this to get rid of icons / control the pace of things.
+        line.set('icons', []);
+    }, 5000);
 }
 
 export function constructDirectionsOnMap(mapInstance, mapInternals, directionsResponse) {
@@ -93,21 +96,27 @@ export function constructDirectionsOnMap(mapInstance, mapInternals, directionsRe
         // }
         drawnPolylines.push(constructPolylineOnMap(mapInstance, mapInternals, [startLatLng, endLatLng], converter(), 1, 6));
     });
- 
+
     // This is traffic.
     const lineSymbol = {
-        path: mapInternals.SymbolPath.CIRCLE,
-        scale: 8,
-        strokeColor: '#393'
-      };
+        path: carSvgPath,
+        // scale: 8,
+        // strokeColor: '#393',
+        fillColor: 'grey',
+        fillOpacity: 1,
+        scale: 0.05,
+        strokeColor: 'black',
+        strokeWeight: 1
+    };
 
     // Need to be on map to render icons, set width to lower.
     // rgba to make line hidden on map w/ opacity, car appears on top!.
     const animationPolyline = constructPolylineOnMap(mapInstance, mapInternals, animationLineCoords, 'rgba(255, 255, 255, 0)', 1, 1, [{
         icon: lineSymbol,
-        offset: '50%'
-      }],);
-      animateCircle(animationPolyline);
+        offset: '50%',
+        repeat: '8%'
+    }]);
+    animateCircle(animationPolyline);
 
-    return { drawnPolylines, animationPolyline};
+    return { drawnPolylines, animationPolyline };
 }
