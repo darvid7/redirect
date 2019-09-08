@@ -196,7 +196,7 @@ export class Map extends Component {
         //     polylines.push(polyline);
         // });
         // console.log(polylines);
-        this.drawGeoJson(mapInstance, mapInternals);
+        // this.drawGeoJson(mapInstance, mapInternals);
 
     }
 
