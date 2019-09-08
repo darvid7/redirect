@@ -108,6 +108,18 @@ function getSpeed(isLast) {
     return speed;
 }
 
+function createInfoWindow(poly, mapInternals, mapInstance) {
+    const infoWindow = new mapInternals.InfoWindow();
+    mapInternals.event.addListener(poly, 'click', function(event) {
+        // infowindow.content = content;
+        infoWindow.setContent("hi");
+
+        // infowindow.position = event.latLng;
+        infoWindow.setPosition(event.latLng);
+        infoWindow.open(mapInstance);
+    });
+}
+
 export function constructDirectionsOnMap(mapInstance, mapInternals, directionsResponse) {
     // routes[0] as only one route here.
     // create 2 types of polylines 
@@ -168,22 +180,24 @@ export function constructDirectionsOnMap(mapInstance, mapInternals, directionsRe
             animationPolyline.setOptions({strokeColor: 'rgba(255, 0, 255)'});
         });
 
-        mapInternals.event.addListener(animationPolyline, 'click', function(latlng) {
-            // animationPolyline.setOptions({strokeColor: 'rgba(255, 0, 255)'});
-            // alert(1);
-            // const infoWindow = new mapInternals.InfoWindow({
-            //     content: "hi"
-            //   });
-            // infowindow.setContent(content);
-            // infowindow.setPosition(event.latLng);
-            // infowindow.open(map);
+        // mapInternals.event.addListener(animationPolyline, 'click', function(latlng) {
+        //     // animationPolyline.setOptions({strokeColor: 'rgba(255, 0, 255)'});
+        //     // alert(1);
+        //     const infoWindow = new mapInternals.InfoWindow({
+        //         content: "hi"
+        //       });
+        //     // infowindow.setContent(content);
+        //     // infowindow.setPosition(event.latLng);
+        //     // infowindow.open(map);
          
 
-        });
+        // });
 
         mapInternals.event.addListener(animationPolyline, 'mouseout', function(latlng) {
             animationPolyline.setOptions({strokeColor: 'rgba(255, 255, 255, 0)'});
         });
+
+        createInfoWindow(animationPolyline, mapInternals);
 
     });
     return allRouteLines;
