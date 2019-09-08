@@ -72,16 +72,15 @@ export class SideBar extends Component {
         return (
             <div style={{
                 width: "20vw",
-                backgroundColor: "#ff9800",
                 display: "flex",
                 fontFamily: "'Source Serif Pro', serif"
             }}>
-
-                <form style={{ display: 'flex', flexDirection: 'column', marginLeft: 'auto', marginRight: 'auto', marginTop: '15px' }}>
+                <form style={{ display: 'flex', flexDirection: 'column', margin: '15px 32px', width: '100%' }}>
 
                     <TextField
                         id="standard-name"
                         label="Start location"
+                        fullWidth
                         // className={classes.textField}
                         value={this.state.start}
                         onChange={this.handleStartChange}
@@ -92,6 +91,7 @@ export class SideBar extends Component {
                     <TextField
                         id="standard-name"
                         label="Destination location"
+                        fullWidth
                         // className={classes.textField}
                         value={this.state.end}
                         onChange={this.handleEndChange}

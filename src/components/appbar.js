@@ -5,9 +5,8 @@ export class AppBar extends Component {
 
     render() {
         return (
-            <div style={{ zIndex: 5, width: "100vw", backgroundColor: "#ff9800", height: "9vh", display: "flex", boxShadow: "0 1vh rgba(0, 0, 0, .4)", marginBottom: '1vh' }}>
-                {/* <img style={{ width: "50px", height: "50px" }} src={logo} className="App-logo" alt="logo" /> */}
-                <div style={{ fontFamily: "'Pacifico', cursive", alignText: 'center', flex: 5, margin: 'auto', fontSize: '38px', color: 'white'}}>
+            <div style={{ zIndex: 10000, width: "100vw", backgroundColor: "#fff", height: "10vh", display: "flex", boxShadow: '0 3px 6px rgba(0,0,0,0.16)' }}>
+                <div style={{ fontFamily: "'Pacifico', cursive", alignText: 'center', flex: 5, margin: 'auto', fontSize: '38px', color: '#555'}}>
                     Redirect
                 </div>
             </div>

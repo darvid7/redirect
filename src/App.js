@@ -20,9 +20,9 @@ class App extends Component {
   }
   render() {
     return (
-      <div className="App" style={{ backgroundColor: "#ff9800" }}>
+      <div className="App" style={{ backgroundColor: "#fff", height: '100vh' }}>
         <AppBar></AppBar>
-        <div style={{ display: 'flex', height: '90vh', margin: 'auto' }}>
+        <div style={{ display: 'flex', height: '90vh', margin: 'auto', zIndex: -5 }}>
           <Map
             startPlace={this.state.startPlace}
             endPlace={this.state.endPlace}
