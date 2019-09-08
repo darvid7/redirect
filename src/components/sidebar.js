@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { MapsPlacesApiHandler } from '../apis/places';
 import { getMapInstance, getMapInternals } from './map_components/map';
 import { canvaPlacesApiResponse, googlePlacesApiResponse } from '../data/map_cache/places_cache';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 
 const USE_CACHE = true;
 
@@ -12,17 +14,18 @@ function getPlacesEndpoint(query) {
 export class SideBar extends Component {
     constructor(props) {
         super(props);
-        this.state = { 
+        this.state = {
             start: 'google',
-            end: 'canva'
+            end: 'canva',
+
         };
-    
+
         this.handleStartChange = this.handleStartChange.bind(this);
         this.handleEndChange = this.handleEndChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
 
-      }
-    
+    }
+
     async callPlacesApi(query) {
         if (USE_CACHE) {
             if (query.includes('canva')) {
@@ -69,20 +72,49 @@ export class SideBar extends Component {
         return (
             <div style={{
                 width: "20vw",
-                backgroundColor: "red",
-                display: "flex"
+                backgroundColor: "#ff9800",
+                display: "flex",
+                fontFamily: "'Source Serif Pro', serif"
             }}>
 
-                <form >
+                <form style={{ display: 'flex', flexDirection: 'column', marginLeft: 'auto', marginRight: 'auto', marginTop: '15px' }}>
 
-                    Start: <input type="text" value={this.state.start} onChange={this.handleStartChange}>
-                    </input><br />
+                    <TextField
+                        id="standard-name"
+                        label="Start location"
+                        // className={classes.textField}
+                        value={this.state.start}
+                        onChange={this.handleStartChange}
+                        margin="normal"
+                        style={{ marginTop: '5px' }}
+                    />
 
-                    End: <input type="text" value={this.state.end} onChange={this.handleEndChange}>
-                    </input><br />
+                    <TextField
+                        id="standard-name"
+                        label="Destination location"
+                        // className={classes.textField}
+                        value={this.state.end}
+                        onChange={this.handleEndChange}
+                        margin="normal"
+                        style={{ marginTop: '5px' }}
 
-                    <input value="Submit" onChange={() => { console.log("shouldn't happen") }} onClick={() => this.handleSubmit()}></input>
+                    />
+                    <Button variant="contained" color="primary"
+                        style={{ marginTop: '10px' }}
+
+                        onClick={() => this.handleSubmit()}
+                    >
+                        Submit
+                    </Button>
+
+                    {this.props.polylines.map((line) => {
+                        return (
+                            <div>poly line place holder</div>
+                        )
+                    })}
                 </form>
+
+
             </div>
         )
     }

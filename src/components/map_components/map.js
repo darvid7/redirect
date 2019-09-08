@@ -31,7 +31,7 @@ export class Map extends Component {
                 lat: -33.873567,
                 lng: 151.2068498
             },
-            zoom: 15,
+            zoom: 13,
             mapInternals: undefined,
             mapInstance: undefined,
             startPlace: this.props.startPlace,
@@ -56,13 +56,13 @@ export class Map extends Component {
 
             // We have a start and end, lets get directions!
             const directionApiReponse = await getDirections(this.state.startPlace['place_id'], this.state.endPlace['place_id']);
-            const { drawnPolylines, animationPolyline }  = constructDirectionsOnMap(this.state.mapInstance, this.state.mapInternals, directionApiReponse)
+            const allRouteLines  = constructDirectionsOnMap(this.state.mapInstance, this.state.mapInternals, directionApiReponse)
             this.setState({
                 markers: [src, dest], 
-                polylines: drawnPolylines,
+                polylines: allRouteLines,
             });
 
-
+            this.props.onDirectionsRender(allRouteLines);
         }
     }
 
@@ -127,7 +127,7 @@ export class Map extends Component {
 
     render() {
         return (
-            <div style={{ height: '80vh', width: '80vw' }}>
+            <div style={{ height: '90vh', width: '80vw' }}>
                 <GoogleMapReact
                     bootstrapURLKeys={{ key: keys.map }}
                     defaultCenter={this.state.center}

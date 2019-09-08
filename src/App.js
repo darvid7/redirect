@@ -10,21 +10,24 @@ class App extends Component {
     this.state = {
       startPlace: undefined,
       endPlace: undefined,
+      polylines: [],
     }
   }
   render() {
     return (
-      <div className="App" style={{ backgroundColor: 'green' }}>
+      <div className="App" style={{ backgroundColor: "#ff9800" }}>
         <AppBar></AppBar>
-        <div style={{ display: 'flex' }}>
-          <SideBar
-            updateStart={(place) => this.setState({ startPlace: place })}
-            updateEnd={(place) => this.setState({ endPlace: place })}
-          ></SideBar>
+        <div style={{ display: 'flex', height: '90vh', margin: 'auto' }}>
           <Map
             startPlace={this.state.startPlace}
             endPlace={this.state.endPlace}
+            onDirectionsRender={(directionRoutes) => this.setState({polylines: directionRoutes})}
           ></Map>
+          <SideBar
+            updateStart={(place) => this.setState({ startPlace: place })}
+            updateEnd={(place) => this.setState({ endPlace: place })}
+            polylines={this.state.polylines}
+          ></SideBar>
         </div>
 
       </div>
