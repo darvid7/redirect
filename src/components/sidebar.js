@@ -5,7 +5,7 @@ import { canvaPlacesApiResponse, googlePlacesApiResponse } from '../data/map_cac
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
-const USE_CACHE = true;
+const USE_CACHE = false;
 
 function getPlacesEndpoint(query) {
     return `http://localhost:8888/places/${query}`;
@@ -15,8 +15,8 @@ export class SideBar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            start: 'google',
-            end: 'canva',
+            start: '',
+            end: '',
 
         };
 
@@ -30,8 +30,12 @@ export class SideBar extends Component {
         if (USE_CACHE) {
             if (query.includes('canva')) {
                 return canvaPlacesApiResponse;
+            } else {
+                if (query.includes('google')) {
+                    return googlePlacesApiResponse;
+                }
+
             }
-            return googlePlacesApiResponse;
         }
         const response = await fetch(getPlacesEndpoint(query));
         const place = await response.json();

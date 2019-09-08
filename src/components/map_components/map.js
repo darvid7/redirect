@@ -50,13 +50,13 @@ export class Map extends Component {
         console.log(this.state);
         if (this.state.startPlace && this.state.endPlace) {
             // Remove previous markers and polyines.
-            this.state.markers.map(marker => marker.setMap(null));
-            this.state.polylines.map(routePolylines => {
-                // Drawn polylines.
-                routePolylines[0].map(pl => pl.setMap(null));
-                // Animation polyline.
-                routePolylines[1].setMap(null)
-            });
+            // this.state.markers.map(marker => marker.setMap(null));
+            // this.state.polylines.map(routePolylines => {
+            //     // Drawn polylines.
+            //     routePolylines[0].map(pl => pl.setMap(null));
+            //     // Animation polyline.
+            //     routePolylines[1].setMap(null)
+            // });
 
             const src = constructMarkerOnMap(this.state.mapInstance, this.state.mapInternals, this.state.startPlace['geometry']['location'], `Starting at ${this.state.startPlace["formatted_address"]}`);
             const dest = constructMarkerOnMap(this.state.mapInstance, this.state.mapInternals, this.state.endPlace['geometry']['location'], `Ending at ${this.state.endPlace["formatted_address"]}`);
@@ -196,7 +196,7 @@ export class Map extends Component {
         //     polylines.push(polyline);
         // });
         // console.log(polylines);
-        // this.drawGeoJson(mapInstance, mapInternals);
+        this.drawGeoJson(mapInstance, mapInternals);
 
     }
 

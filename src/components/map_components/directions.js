@@ -5,7 +5,7 @@ import carIcon from '../../data/car.svg';
 import { carSvgPath } from '../../data/carSvg';
 
 // TODO: incrementally cache backend?
-const USE_CACHE = true;
+const USE_CACHE = false;
 function getDirectionsEndpoint(startId, endId) {
     return `http://localhost:8888/directions/${startId}&${endId}`;
 }
