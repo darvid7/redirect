@@ -7,6 +7,7 @@ import { polylinePaths, constructPolylineOnMap } from './polyline';
 import { constructDirectionsOnMap, getDirections } from './directions';
 // import { nswGeoJson } from '../../data/nsw_js_geojson.js';
 // console.log(nswGeoJson);
+import {parkingGeoJson} from '../../data/pOffstreetParkingData'
 import { constructMarkerOnMap } from './markers';
 
 let gMapInstance = null;
@@ -38,32 +39,52 @@ export class Map extends Component {
             endPlace: this.props.endPlace,
             markers: [],
             polylines: [],
+            intervals: [],
+            throttleCount: this.props.throttleCount,
         };
 
     }
 
   async renderMarkersAndDirections() {
-        // this.drawGeoJson(mapInstance);
         console.log('render markers and directions');
         console.log(this.state);
         if (this.state.startPlace && this.state.endPlace) {
             // Remove previous markers and polyines.
             this.state.markers.map(marker => marker.setMap(null));
-            this.state.polylines.map(pl => pl.setMap(null));
+            this.state.polylines.map(routePolylines => {
+                // Drawn polylines.
+                routePolylines[0].map(pl => pl.setMap(null));
+                // Animation polyline.
+                routePolylines[1].setMap(null)
+            });
 
             const src = constructMarkerOnMap(this.state.mapInstance, this.state.mapInternals, this.state.startPlace['geometry']['location']);
             const dest = constructMarkerOnMap(this.state.mapInstance, this.state.mapInternals, this.state.endPlace['geometry']['location']);
 
             // We have a start and end, lets get directions!
             const directionApiReponse = await getDirections(this.state.startPlace['place_id'], this.state.endPlace['place_id']);
-            const allRouteLines  = constructDirectionsOnMap(this.state.mapInstance, this.state.mapInternals, directionApiReponse)
+            const { allRouteLines, allIntervals}  = constructDirectionsOnMap(this.state.mapInstance, this.state.mapInternals, directionApiReponse)
             this.setState({
                 markers: [src, dest], 
                 polylines: allRouteLines,
+                intervals: allIntervals,
             });
 
             this.props.onDirectionsRender(allRouteLines);
         }
+    }
+
+    animateCircle(line, speed) {
+        var count = 0;
+        return window.setInterval(function () {
+            count = (count + 1) % 200;
+    
+            var icons = line.get('icons');
+            icons[0].offset = (count / 2) + '%';
+            // can use this to get rid of icons / control the pace of things.
+            line.set('icons', icons);
+            // quarter of a second.
+        }, speed);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -77,17 +98,69 @@ export class Map extends Component {
             this.setState({ endPlace: nextProps.endPlace }, () => this.renderMarkersAndDirections()
             );
         }
+        if (nextProps.throttleCount !== this.state.throttleCount) {
+            console.log('updating throttle speeds')
+            // Need to update animations.
+            const allNewIntervalRefs = [];
+            this.state.intervals.map((intervalData, i) => {
+                // clear timeout. 
+                window.clearTimeout(intervalData[0]);
+
+                // update spoeed.
+                // bottle next is the last one. 
+                let offset = 50;
+                // make last one faster, make others slower.
+                if (i === this.state.polylines.length - 1) {
+                    offset = -300
+                }
+                const updatedSpeed = intervalData[1] + offset;
+                console.log(`index: ${i} old speed: ${intervalData[1]} new speed: ${updatedSpeed}`)
+                // set animtions on aimating polyline. 
+                const animatingPolyline = this.state.polylines[i][1];
+                const newIntervalRef = this.animateCircle(animatingPolyline, updatedSpeed);
+                allNewIntervalRefs.push([newIntervalRef, updatedSpeed]);
+            })
+            this.setState({throttleCount: nextProps.throttleCount, 
+                intervals: allNewIntervalRefs,
+            });
+
+        }
 
     }
-
-    drawGeoJson(mapInstance) {
-        mapInstance.data.setStyle({
-            fillColor: 'green',
-            strokeWeight: 1,
-            strokeOpacity: 0.4,
+    drawParkingMarker(mapInstance, mapsInternals, markerLatLng, string) {
+            const parkingIconUrl = "https://developers.google.com/maps/documentation/javascript/examples/full/images/parking_lot_maps.png";
+        
+        const marker = new mapsInternals.Marker({position: markerLatLng, map: mapInstance, icon: parkingIconUrl});
+        const infoWindow = new mapsInternals.InfoWindow({
+            content: string
         });
-        mapInstance.data.loadGeoJson('https://data.gov.au/geoserver/nsw-suburb-locality-boundaries-psma-administrative-boundaries/wfs?request=GetFeature&typeName=ckan_91e70237_d9d1_4719_a82f_e71b811154c6&outputFormat=json');
-        console.log(mapInstance.data);
+        marker.addListener('mouseover', function() {
+            infoWindow.open(mapInstance, this);
+        });
+        
+        // assuming you also want to hide the infowindow when user mouses-out
+        marker.addListener('mouseout', function() {
+            infoWindow.close();
+        });
+        return marker;
+    }
+
+    drawGeoJson(mapInstance, mapInternals) {
+      
+        parkingGeoJson["features"].map(parkingInfo => {
+            const lat = parkingInfo["geometry"]["coordinates"][1];
+            const lng = parkingInfo["geometry"]["coordinates"][0];
+            const properties = parkingInfo["properties"];
+            const infoString = ` ${properties["Total_number_of_bays"]} available parking spots at ${properties["Building_name_location"]} ${properties["Street_Number_GPS"]} ${properties["Street_Name_GPS"]}`
+            this.drawParkingMarker(mapInstance, mapInternals, {lat, lng}, infoString);
+        });
+        // mapInstance.data.setStyle({
+        //     fillColor: 'green',
+        //     strokeWeight: 1,
+        //     strokeOpacity: 0.4,
+        // });
+        // mapInstance.data.loadGeoJson(parkingGeoJson);
+        // console.log(mapInstance.data);
     }
 
     /** Use to add Google Map internals to the GoogleMapReact object which doesn't support everything nicely. */
@@ -123,6 +196,8 @@ export class Map extends Component {
         //     polylines.push(polyline);
         // });
         // console.log(polylines);
+        // this.drawGeoJson(mapInstance, mapInternals);
+
     }
 
     render() {

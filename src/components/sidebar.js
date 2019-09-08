@@ -42,7 +42,7 @@ export class SideBar extends Component {
         const mostLikelyPlace = place['results'][0];
         return mostLikelyPlace;
     }
-
+  
     async handleSubmit() {
         if (!(this.state.start || this.state.end)) {
             return;
@@ -107,11 +107,14 @@ export class SideBar extends Component {
                         Submit
                     </Button>
 
-                    {this.props.polylines.map((line) => {
-                        return (
-                            <div>poly line place holder</div>
-                        )
-                    })}
+                    <Button variant="contained" color="primary"
+                        style={{ marginTop: '10px' }}
+
+                        onClick={() => this.props.handleThrottle()}
+                    >
+                        Redirect
+                    </Button>
+                   
                 </form>
 
 

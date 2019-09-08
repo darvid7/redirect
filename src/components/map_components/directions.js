@@ -87,7 +87,7 @@ function converter(restraint = false) {
 }
 function animateCircle(line, speed) {
     var count = 0;
-    window.setInterval(function () {
+    return window.setInterval(function () {
         count = (count + 1) % 200;
 
         var icons = line.get('icons');
@@ -100,10 +100,10 @@ function animateCircle(line, speed) {
 
 function getSpeed(isLast) {
     if (isLast) {
-        return 4000; // 4 seconds.
+        return 1500; // 1.5 seconds.
     }
     const max = 1000;
-    const min = 100;
+    const min = 800;
     const speed = Math.floor(Math.random() * (+max - +min)) + +min;
     return speed;
 }
@@ -112,11 +112,12 @@ function createInfoWindow(poly, mapInternals, mapInstance) {
     const infoWindow = new mapInternals.InfoWindow();
     mapInternals.event.addListener(poly, 'click', function(event) {
         // infowindow.content = content;
-        infoWindow.setContent("hi");
-
+        infoWindow.setContent("hi will this text pls show up!!!!!!<div></div>");
+        console.log(event.latLng);
         // infowindow.position = event.latLng;
         infoWindow.setPosition(event.latLng);
         infoWindow.open(mapInstance);
+        console.log(infoWindow);
     });
 }
 
@@ -126,6 +127,7 @@ export function constructDirectionsOnMap(mapInstance, mapInternals, directionsRe
     // 1. animation line, fully connectted.
     // 2. diff color lines.
     const allRouteLines = [];
+    const allIntervals = [];
     const routes = directionsResponse["routes"].reverse();
     // so final con is drawn o.
     routes.map((route, routeIndex) => {
@@ -173,7 +175,11 @@ export function constructDirectionsOnMap(mapInstance, mapInternals, directionsRe
             offset: '50%',
             repeat: '8%'
         }]);
-        animateCircle(animationPolyline, getSpeed(routeIndex === routes.length - 1));
+        const speed = getSpeed(routeIndex === routes.length - 1);
+        const intervalRef = animateCircle(animationPolyline, speed);
+
+        allIntervals.push([intervalRef, speed]);
+
         allRouteLines.push([drawnPolylines, animationPolyline]);
 
         mapInternals.event.addListener(animationPolyline, 'mouseover', function(latlng) {
@@ -200,5 +206,5 @@ export function constructDirectionsOnMap(mapInstance, mapInternals, directionsRe
         createInfoWindow(animationPolyline, mapInternals);
 
     });
-    return allRouteLines;
+    return { allRouteLines, allIntervals};
 }

@@ -11,7 +11,12 @@ class App extends Component {
       startPlace: undefined,
       endPlace: undefined,
       polylines: [],
+      throttleCount: 0,
     }
+  }
+  handleThrottle() {
+    console.log('throttling');
+    this.setState({throttleCount: this.state.throttleCount + 1});
   }
   render() {
     return (
@@ -22,11 +27,13 @@ class App extends Component {
             startPlace={this.state.startPlace}
             endPlace={this.state.endPlace}
             onDirectionsRender={(directionRoutes) => this.setState({polylines: directionRoutes})}
+            throttleCount={this.state.throttleCount}
           ></Map>
           <SideBar
             updateStart={(place) => this.setState({ startPlace: place })}
             updateEnd={(place) => this.setState({ endPlace: place })}
             polylines={this.state.polylines}
+            handleThrottle={() => this.handleThrottle()}
           ></SideBar>
         </div>
 
