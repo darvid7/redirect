@@ -58,8 +58,8 @@ export class Map extends Component {
                 routePolylines[1].setMap(null)
             });
 
-            const src = constructMarkerOnMap(this.state.mapInstance, this.state.mapInternals, this.state.startPlace['geometry']['location']);
-            const dest = constructMarkerOnMap(this.state.mapInstance, this.state.mapInternals, this.state.endPlace['geometry']['location']);
+            const src = constructMarkerOnMap(this.state.mapInstance, this.state.mapInternals, this.state.startPlace['geometry']['location'], `Starting at ${this.state.startPlace["formatted_address"]}`);
+            const dest = constructMarkerOnMap(this.state.mapInstance, this.state.mapInternals, this.state.endPlace['geometry']['location'], `Ending at ${this.state.endPlace["formatted_address"]}`);
 
             // We have a start and end, lets get directions!
             const directionApiReponse = await getDirections(this.state.startPlace['place_id'], this.state.endPlace['place_id']);
